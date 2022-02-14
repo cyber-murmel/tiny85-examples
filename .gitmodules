@@ -1,0 +1,6 @@
+[submodule "micronucleus"]
+	path = micronucleus
+	url = https://github.com/micronucleus/micronucleus.git
+[submodule "lib/DigistumpArduino"]
+	path = lib/DigistumpArduino
+	url = https://github.com/digistump/DigistumpArduino.git
