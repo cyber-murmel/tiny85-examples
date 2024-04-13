@@ -1,5 +1,6 @@
 TARGET ?= blink
 PLATFORM ?= t85_default
+TTY_PORT ?= /dev/ttyACM0
 
 CONFIGPATH = micronucleus/firmware/configuration/$(PLATFORM)
 include $(CONFIGPATH)/Makefile.inc
@@ -9,6 +10,7 @@ CROSS_COMPILE ?= avr-
 MICRONUCLEUS ?= micronucleus
 PROGRAMMER ?= -c USBasp
 AVRDUDE = avrdude $(PROGRAMMER) -p $(DEVICE)
+PYTHON ?= python3
 
 include src/$(TARGET)/Makefile.inc
 
@@ -51,22 +53,30 @@ $(BUILD)/$(TARGET).elf: $(OBJ)
 
 flash: $(BUILD)/$(TARGET).hex
 	$(Q)$(AVRDUDE) -U flash:w:$^:i
+.PHONY: flash
 
 readflash:
 	$(Q)$(AVRDUDE) -U flash:r:read.hex:i -B 20
+.PHONY: readflash
 
 fuse:
 	$(Q)$(AVRDUDE) $(FUSEOPT) -B 20
+.PHONY: fuse
 
 read_fuses:
 	$(Q)$(AVRDUDE) -B 20
+.PHONY: read_fuses
 
 upload: $(BUILD)/$(TARGET).hex
 	$(Q)$(MICRONUCLEUS) --run $^
+.PHONY: upload
+
+term: $(BUILD)/$(TARGET).hex
+	$(Q)$(PYTHON) -m serial.tools.miniterm --exit-char 24 --raw $(TTY_PORT)
+.PHONY: upload
 
 format:
 	$(Q)find src/ -type f -regex '.*\.\(h\|c\|cpp\)$$' -exec clang-format -i -style=WebKit {} +
-
-.PHONY: flash readflash fuse read_fuses format
+.PHONY: format
 
 include ./mkrules.mk

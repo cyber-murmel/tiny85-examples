@@ -9,6 +9,6 @@ mkShell {
     avrdude
     micronucleus
     clang-tools
-    pythonPackages.pyserial
+    python3Packages.pyserial
   ];
 }
